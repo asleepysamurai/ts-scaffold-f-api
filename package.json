@@ -12,7 +12,8 @@
     "build": "rimraf dist && tsc && cp tsconfig.json ./dist && cp -r config ./dist/",
     "start": "yarn build && cd dist && env NODE_ENV=development node --experimental-specifier-resolution=node -r tsconfig-paths/register ./src/index.js",
     "start:inspect": "yarn build && cd dist && env NODE_ENV=development node --experimental-specifier-resolution=node --inspect -r tsconfig-paths/register ./src/index.js",
-    "start:inspect-brk": "yarn build && cd dist && env NODE_ENV=development node --experimental-specifier-resolution=node --inspect-brk -r tsconfig-paths/register ./src/index.js"
+    "start:inspect-brk": "yarn build && cd dist && env NODE_ENV=development node --experimental-specifier-resolution=node --inspect-brk -r tsconfig-paths/register ./src/index.js",
+    "knex": "knex --knexfile ./knexfile.ts"
   },
   "devDependencies": {
     "@types/node": "^14.0.1",
@@ -20,6 +21,7 @@
     "prettier": "2.0.5",
     "pretty-quick": "^2.0.1",
     "rimraf": "^3.0.2",
+    "ts-node": "^8.10.1",
     "tsc-watch": "^4.2.4",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.2"
@@ -33,6 +35,8 @@
     "node": ">=14.2.0 <15.0.0"
   },
   "dependencies": {
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "knex": "^0.21.1",
+    "pg": "^8.2.0"
   }
 }
