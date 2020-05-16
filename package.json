@@ -9,10 +9,16 @@
   "private": true,
   "scripts": {
     "x": " ",
-    "build": "rimraf dist && tsc && cp tsconfig.json ./dist && cp -r config ./dist/",
-    "start": "yarn build && cd dist && env NODE_ENV=development node --experimental-specifier-resolution=node -r tsconfig-paths/register ./src/index.js",
-    "start:inspect": "yarn build && cd dist && env NODE_ENV=development node --experimental-specifier-resolution=node --inspect -r tsconfig-paths/register ./src/index.js",
-    "start:inspect-brk": "yarn build && cd dist && env NODE_ENV=development node --experimental-specifier-resolution=node --inspect-brk -r tsconfig-paths/register ./src/index.js",
+    "prep": "rimraf dist && mkdir -p dist && cp tsconfig.json ./dist && cp -r config ./dist/",
+    "build:run": "tsc && yarn run:standard",
+    "build:watch:run": "tsc-watch --noClear --onSuccess \"yarn run:inspect\"",
+    "build:watch:run-brk": "tsc-watch --onSuccess \"yarn run:inspect-brk\"",
+    "run:standard": "cd dist && env NODE_ENV=development node -r tsconfig-paths/register ./src/index.js",
+    "run:inspect": "cd dist && env NODE_ENV=development node --inspect -r tsconfig-paths/register ./src/index.js",
+    "run:inspect-brk": "cd dist && env NODE_ENV=development node --inspect-brk -r tsconfig-paths/register ./src/index.js",
+    "start": "yarn prep && yarn build:run",
+    "start:inspect": "yarn prep && yarn build:watch:run",
+    "start:inspect-brk": "yarn prep && yarn build:watch:run-brk",
     "knex": "knex --knexfile ./knexfile.ts"
   },
   "devDependencies": {
@@ -27,7 +33,7 @@
     "pretty-quick": "^2.0.1",
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.1",
-    "tsc-watch": "^4.2.4",
+    "tsc-watch": "^4.2.5",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.2"
   },
