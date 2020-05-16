@@ -34,7 +34,6 @@
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.1",
     "tsc-watch": "^4.2.5",
-    "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.2"
   },
   "husky": {
@@ -48,6 +47,7 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "knex": "^0.21.1",
-    "pg": "^8.2.0"
+    "pg": "^8.2.0",
+    "tsconfig-paths": "^3.9.0"
   }
 }
