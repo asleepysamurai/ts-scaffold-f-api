@@ -9,7 +9,8 @@
   "private": true,
   "scripts": {
     "x": " ",
-    "prep": "rimraf dist && mkdir -p dist && cp tsconfig.json ./dist && cp -r config ./dist/",
+    "env:types": "types-from-env ./config/default.env ./src/codegen/env.types.ts",
+    "prep": "rimraf dist && mkdir -p dist && cp tsconfig.json ./dist && cp -r config ./dist/ && mkdir -p src/codegen && yarn env:types",
     "build:run": "tsc && yarn run:standard",
     "build:watch:run": "tsc-watch --noClear --onSuccess \"yarn run:inspect\"",
     "build:watch:run-brk": "tsc-watch --noClear --onSuccess \"yarn run:inspect-brk\"",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.0.1",
+    "@types/nodemailer": "^6.4.0",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "eslint": "^7.0.0",
@@ -34,6 +36,7 @@
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.1",
     "tsc-watch": "^4.2.5",
+    "types-from-env": "^1.0.0",
     "typescript": "^3.9.2"
   },
   "husky": {
@@ -46,7 +49,10 @@
   },
   "dependencies": {
     "dotenv": "^8.2.0",
+    "fastify": "^2.14.1",
+    "fastify-formbody": "^3.2.0",
     "knex": "^0.21.1",
+    "nodemailer": "^6.4.6",
     "pg": "^8.2.0",
     "tsconfig-paths": "^3.9.0"
   }

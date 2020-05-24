@@ -7,6 +7,7 @@
 
 import dotenv from 'dotenv';
 import * as path from 'path';
+import type { EnvVarKey } from 'codegen/env.types.ts';
 
 class Environment {
   constructor() {
@@ -23,16 +24,16 @@ class Environment {
     });
   }
 
-  get(key: string): any | undefined {
+  get(key: EnvVarKey): any {
+    if (process.env[key] === undefined) {
+      throw new Error(`Env var not configure for ${key}`);
+    }
+
     return process.env[key];
   }
 
-  getAsInt(key: string): number | undefined {
-    if (process.env[key] === undefined) {
-      return;
-    }
-
-    const value = parseInt(process.env[key] || '');
+  getAsInt(key: EnvVarKey): number {
+    const value = parseInt(this.get(key));
 
     if (isNaN(value)) {
       throw new Error(`Cannot cast ${key} value to int`);
@@ -41,8 +42,8 @@ class Environment {
     return value;
   }
 
-  getAsBool(key: string): boolean {
-    return (process.env[key] || '').toLowerCase() === 'true';
+  getAsBool(key: EnvVarKey): boolean {
+    return (this.get(key) || '').toLowerCase() === 'true';
   }
 }
 
