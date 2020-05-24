@@ -51,32 +51,32 @@ const sendVerificationCode = async (email: string, verificationCode: string) => 
 
   return mailer.send(
     {
-      name: 'IWA Support',
-      address: 'iwa-support@example.com',
+      name: 'F-API Support',
+      address: 'f-api-support@example.com',
     },
     email,
-    'Please activate your new IWA account',
+    'Please activate your new F-API account',
     `Hello :)
 
-A new IWA account has been created for you. Before you can use this account, you need to verify your email address. In order to verify your email address, please copy the link below and paste it into your browser's address bar.
+A new F-API account has been created for you. Before you can use this account, you need to verify your email address. In order to verify your email address, please copy the link below and paste it into your browser's address bar.
 
 ${verificationLink}
 
 If you did not create this account, or it was not created on your behalf, please let us know (by replying to this email), so we can delete this account.
 
 Regards,
-IWA Support
+F-API Support
 `,
     `Hello :)
 
-<p>A new IWA account has been created for you. Before you can use this account, you need to verify your email address. In order to verify your email address, please click the link below.</p>
+<p>A new F-API account has been created for you. Before you can use this account, you need to verify your email address. In order to verify your email address, please click the link below.</p>
 
 <p><a href="${verificationLink}">${verificationLink}</a></p>
 
 <p>If you did not create this account, or it was not created on your behalf, please let us know (by replying to this email), so we can delete this account.</p>
 
 <br><br>Regards,<br>
-IWA Support
+F-API Support
 `,
   );
 };
@@ -92,25 +92,25 @@ const sendVerificationOrWarning = async (email: string): Promise<{ id: string }>
     // User already verified
     await mailer.send(
       {
-        name: 'IWA Support',
-        address: 'iwa-support@example.com',
+        name: 'F-API Support',
+        address: 'f-api-support@example.com',
       },
       user.email,
-      'Somebody attempted to create an IWA account for you',
+      'Somebody attempted to create an F-API account for you',
       `Hello :)
 
-You, or somebody on your behalf attempted to create a new IWA account.
+You, or somebody on your behalf attempted to create a new F-API account.
 
 However an account already exists for this email address. If this was intended by you, you can go ahead and login, as you normally would, or you could request a password reset if you do not remember your account password.
 
 If you did not create this account, or it was not created on your behalf, please ignore this email. Your account is safe, and there has not been any unauthorized access.
 
 Regards,
-IWA Support
+F-API Support
 `,
       `Hello :)
 
-<p>You, or somebody on your behalf attempted to create a new IWA account.</p>
+<p>You, or somebody on your behalf attempted to create a new F-API account.</p>
 
 <p>However an account already exists for this email address. If this was intended by you, you can go ahead and <a href="${env.get(
         'MAILER_LINK_PREFIX',
@@ -121,7 +121,7 @@ IWA Support
 <p>If you did not create this account, or it was not created on your behalf, please ignore this email. Your account is safe, and there has not been any unauthorized access.</p>
 
 <br><br>Regards,<br>
-IWA Support
+F-API Support
 `,
     );
   } else {

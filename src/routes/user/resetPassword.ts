@@ -62,7 +62,14 @@ export const handle = async (
         code: req.body.code,
       });
 
-      if (resetCode?.user_id) {
+      if (!resetCode?.user_id) {
+        throw {
+          code: 400,
+          message: 'Invalid code',
+        };
+      }
+
+      {
         const user = await db.getOne('users', {
           id: resetCode.user_id,
         });
@@ -78,11 +85,6 @@ export const handle = async (
           db.update('users', { id: resetCode.user_id }, updateDoc, undefined, 1, trx),
           db.delete('pending_password_resets', { code: req.body.code }, undefined, 1, trx, false),
         ]);
-      } else {
-        throw {
-          code: 400,
-          message: 'Invalid code',
-        };
       }
 
       user = { id: resetCode.user_id };
