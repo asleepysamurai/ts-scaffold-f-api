@@ -70,7 +70,7 @@ class DB {
       .returning(options.idField as string)
       .insert(insertRecord);
 
-    if (action) {
+    if (action && trx) {
       action.transacting(trx as Knex.Transaction);
     }
 

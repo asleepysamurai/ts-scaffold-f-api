@@ -1,5 +1,5 @@
 /**
- * POST /user endpoint
+ * POST /user/forgot-password endpoint
  */
 
 import fastify from 'fastify';

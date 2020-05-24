@@ -4,6 +4,7 @@
 
 import fastify from 'fastify';
 import fastifyFormBody from 'fastify-formbody';
+import fastifySecureSession from 'fastify-secure-session';
 import type { ServerResponse } from 'http';
 
 import { env } from 'utils/environment';
@@ -11,6 +12,13 @@ import * as routes from 'routes';
 
 const initPlugins = async (app: fastify.FastifyInstance) => {
   app.register(fastifyFormBody);
+  app.register(fastifySecureSession, {
+    secret: env.get('SESSION_COOKIE_KEY'),
+    salt: env.get('SESSION_COOKIE_SALT'),
+    cookie: {
+      secret: env.get('SESSION_COOKIE_SECRET'),
+    },
+  });
 };
 
 const setupDefaultRoute = (app: fastify.FastifyInstance) => {

@@ -23,5 +23,8 @@ export const EnvVarNames = [
   'MAILER_USE_TLS',
   'MAILER_PORT',
   'MAILER_LINK_PREFIX',
+  'SESSION_COOKIE_SECRET',
+  'SESSION_COOKIE_KEY',
+  'SESSION_COOKIE_SALT',
 ] as const;
 export type EnvVarKey = typeof EnvVarNames[number];
