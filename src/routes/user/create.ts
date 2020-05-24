@@ -31,8 +31,13 @@ export const schema = {
         data: {
           type: 'object',
           properties: {
-            id: {
-              type: 'string',
+            user: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'string',
+                },
+              },
             },
           },
         },
@@ -120,7 +125,7 @@ IWA Support
 `,
     );
   } else {
-    let verificationCode = await db.getOne('pending_user_verifications', { user_id: user.id });
+    let verificationCode = await db.getOne('pending_password_resets', { user_id: user.id });
     if (verificationCode?.code) {
       await sendVerificationCode(user.email, verificationCode.code);
     } else {
@@ -157,7 +162,7 @@ export const handle = async (
       }
 
       const verificationCode = await db.insert(
-        'pending_user_verifications',
+        'pending_password_resets',
         { user_id: userId },
         { idField: 'code', recordCanUpdate: false },
         trx,
@@ -168,7 +173,7 @@ export const handle = async (
       return;
     });
 
-    return user;
+    return { success: true, data: { user } };
   } catch (err) {
     if (err.code !== '23505') {
       req.log.error(`Failed to create user`, { err: err.message });

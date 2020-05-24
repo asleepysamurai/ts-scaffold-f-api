@@ -120,9 +120,15 @@ class DB {
     select?: string[],
     limit?: number,
     trx?: Knex.Transaction,
+    recordCanUpdate: boolean = true,
   ): Promise<any> {
     const action = this.knex(table)
-      .update({ _deleted_at: Date.now(), _updated_at: Date.now() })
+      .update(
+        Object.assign(
+          { _deleted_at: Date.now() },
+          recordCanUpdate ? { _updated_at: Date.now() } : {},
+        ),
+      )
       .where(where);
 
     if (select) {
@@ -148,8 +154,11 @@ class DB {
     select?: string[],
     limit?: number,
     trx?: Knex.Transaction,
+    recordCanUpdate: boolean = true,
   ): Promise<any> {
-    update._updated_at = Date.now();
+    if (recordCanUpdate) {
+      update._updated_at = Date.now();
+    }
 
     const action = this.knex(table).update(update).where(where);
 
