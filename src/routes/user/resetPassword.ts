@@ -59,7 +59,7 @@ export const handle = async (
 
     await db.transact(async (trx: Transaction) => {
       const resetCode = await db.getOne('pending_password_resets', {
-        code: req.body.code,
+        where: { code: req.body.code },
       });
 
       if (!resetCode?.user_id) {
@@ -71,7 +71,7 @@ export const handle = async (
 
       {
         const user = await db.getOne('users', {
-          id: resetCode.user_id,
+          where: { id: resetCode.user_id },
         });
 
         const updateDoc = Object.assign(
@@ -82,8 +82,18 @@ export const handle = async (
         );
 
         await Promise.all([
-          db.update('users', { id: resetCode.user_id }, updateDoc, undefined, 1, trx),
-          db.delete('pending_password_resets', { code: req.body.code }, undefined, 1, trx, false),
+          db.update('users', {
+            where: { id: resetCode.user_id },
+            update: updateDoc,
+            limit: 1,
+            trx,
+          }),
+          db.delete('pending_password_resets', {
+            where: { code: req.body.code },
+            limit: 1,
+            trx,
+            recordCanUpdate: false,
+          }),
         ]);
       }
 

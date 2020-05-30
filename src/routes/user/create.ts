@@ -82,7 +82,7 @@ F-API Support
 };
 
 const sendVerificationOrWarning = async (email: string): Promise<{ id: string }> => {
-  let user = await db.getOne('users', { email });
+  let user = await db.getOne('users', { where: { email } });
   if (!(user?.email && user?.id)) {
     // Should never happen, but just in case
     throw new Error('Unknown user');
@@ -125,7 +125,9 @@ F-API Support
 `,
     );
   } else {
-    let verificationCode = await db.getOne('pending_password_resets', { user_id: user.id });
+    let verificationCode = await db.getOne('pending_password_resets', {
+      where: { user_id: user.id },
+    });
     if (verificationCode?.code) {
       await sendVerificationCode(user.email, verificationCode.code);
     } else {
@@ -150,7 +152,7 @@ export const handle = async (
       let userId;
 
       try {
-        userId = await db.insert('users', { email: req.body.email }, undefined, trx);
+        userId = await db.insert('users', { email: req.body.email }, { trx });
       } catch (err) {
         if (err.code === '23505') {
           const { id } = await sendVerificationOrWarning(req.body.email);
@@ -164,8 +166,7 @@ export const handle = async (
       const verificationCode = await db.insert(
         'pending_password_resets',
         { user_id: userId },
-        { idField: 'code', recordCanUpdate: false },
-        trx,
+        { idField: 'code', recordCanUpdate: false, trx },
       );
 
       await sendVerificationCode(req.body.email, verificationCode);

@@ -52,7 +52,7 @@ export const handle = async (
   res: fastify.FastifyReply<ServerResponse>,
 ) => {
   try {
-    const user = await db.getOne('users', { email: req.body.email });
+    const user = await db.getOne('users', { where: { email: req.body.email } });
 
     if (user?.id && user?.password) {
       const passwordCheckOkay = await bcrypt.compare(req.body.password, user.password);

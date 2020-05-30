@@ -78,14 +78,13 @@ export const handle = async (
 ) => {
   try {
     await db.transact(async (trx: Transaction) => {
-      const user = await db.getOne('users', { email: req.body.email });
+      const user = await db.getOne('users', { where: { email: req.body.email } });
 
       if (user?.id) {
         const resetCode = await db.insert(
           'pending_password_resets',
           { user_id: user.id },
-          { idField: 'code', recordCanUpdate: false },
-          trx,
+          { idField: 'code', recordCanUpdate: false, trx },
         );
 
         await sendResetCode(req.body.email, resetCode);

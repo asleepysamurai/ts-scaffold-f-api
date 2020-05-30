@@ -48,12 +48,12 @@ class DB {
   async insert(
     table: string,
     record: { [key: string]: any },
-    options: { idField?: string; recordCanUpdate?: boolean } = {},
-    trx?: Knex.Transaction,
+    {
+      idField = 'id',
+      recordCanUpdate = true,
+      trx,
+    }: { idField?: string; recordCanUpdate?: boolean; trx?: Knex.Transaction },
   ): Promise<string> {
-    const defaultOptions = { idField: 'id', recordCanUpdate: true };
-    options = Object.assign({}, defaultOptions, options);
-
     const now = Date.now();
 
     const insertRecord = Object.assign(
@@ -61,13 +61,13 @@ class DB {
       record,
       {
         _created_at: now,
-        [options.idField as string]: await this.getId(),
+        [idField as string]: await this.getId(),
       },
-      options.recordCanUpdate ? { _updated_at: now } : {},
+      recordCanUpdate ? { _updated_at: now } : {},
     );
 
     const action: Knex.QueryBuilder<any, string[]> = this.knex(table)
-      .returning(options.idField as string)
+      .returning(idField as string)
       .insert(insertRecord);
 
     if (action && trx) {
@@ -86,95 +86,134 @@ class DB {
 
   async get(
     table: string,
-    where?: { [key: string]: any },
-    select?: string[],
-    limit?: number,
+    {
+      where,
+      select,
+      limit,
+      trx,
+    }: {
+      where?: { [key: string]: any };
+      select?: string[];
+      limit?: number;
+      trx?: Knex.Transaction;
+    } = {},
   ): Promise<Array<{ [key: string]: any }>> {
-    const action = this.knex(table);
+    const query = this.knex(table);
+    this.applyOptionsToQueryBuilder(query, { where, select, limit, trx });
+    query.whereNull('_deleted_at');
 
-    if (where) {
-      action.where(where);
-    }
-
-    if (select) {
-      action.select(select);
-    }
-
-    if (limit) {
-      action.limit(limit);
-    }
-
-    action.whereNull('_deleted_at');
-
-    const records = await action;
+    const records = await query;
     return records;
   }
 
-  async getOne(table: string, where?: { [key: string]: any }, select?: string[]): Promise<any> {
-    return (await this.get(table, where, select, 1))?.[0];
+  async getOne(
+    table: string,
+    {
+      where,
+      select,
+      trx,
+    }: {
+      where?: { [key: string]: any };
+      select?: string[];
+      trx?: Knex.Transaction;
+    } = {},
+  ): Promise<any> {
+    return (await this.get(table, { where, select, limit: 1, trx }))?.[0];
+  }
+
+  private applyOptionsToQueryBuilder(
+    queryBuilder: Knex.QueryBuilder,
+    {
+      where,
+      select,
+      limit,
+      trx,
+    }: {
+      where?: { [key: string]: any };
+      select?: string[];
+      limit?: number;
+      trx?: Knex.Transaction;
+    } = {},
+  ): Knex.QueryBuilder {
+    if (where) {
+      queryBuilder.where(where);
+    }
+
+    if (select) {
+      queryBuilder.returning(select);
+    }
+
+    if (limit) {
+      queryBuilder.limit(limit);
+    }
+
+    if (trx) {
+      queryBuilder.transacting(trx);
+    }
+
+    return queryBuilder;
   }
 
   async delete(
     table: string,
-    where: { [key: string]: any },
-    select?: string[],
-    limit?: number,
-    trx?: Knex.Transaction,
-    recordCanUpdate: boolean = true,
+    {
+      where,
+      select,
+      limit,
+      trx,
+      recordCanUpdate = true,
+    }: {
+      where: { [key: string]: any };
+      select?: string[];
+      limit?: number;
+      trx?: Knex.Transaction;
+      recordCanUpdate?: boolean;
+    },
   ): Promise<any> {
-    const action = this.knex(table)
-      .update(
+    const query = this.applyOptionsToQueryBuilder(
+      this.knex(table).update(
         Object.assign(
           { _deleted_at: Date.now() },
           recordCanUpdate ? { _updated_at: Date.now() } : {},
         ),
-      )
-      .where(where);
+      ),
+      { where, select, limit, trx },
+    );
 
-    if (select) {
-      action.returning(select);
-    }
-
-    if (limit) {
-      action.limit(limit);
-    }
-
-    if (trx) {
-      action.transacting(trx);
-    }
-
-    const result = await action;
+    const result = await query;
     return result;
   }
 
   async update(
     table: string,
-    where: { [key: string]: any },
-    update: { [key: string]: any },
-    select?: string[],
-    limit?: number,
-    trx?: Knex.Transaction,
-    recordCanUpdate: boolean = true,
+    {
+      update,
+      where,
+      select,
+      limit,
+      trx,
+      recordCanUpdate = true,
+    }: {
+      where: { [key: string]: any };
+      update: { [key: string]: any };
+      select?: string[];
+      limit?: number;
+      trx?: Knex.Transaction;
+      recordCanUpdate?: boolean;
+    },
   ): Promise<any> {
     if (recordCanUpdate) {
       update._updated_at = Date.now();
     }
 
-    const action = this.knex(table).update(update).where(where);
+    const query = this.applyOptionsToQueryBuilder(this.knex(table).update(update), {
+      where,
+      select,
+      limit,
+      trx,
+    });
 
-    if (select) {
-      action.returning(select);
-    }
-
-    if (limit) {
-      action.limit(limit);
-    }
-
-    if (trx) {
-      action.transacting(trx);
-    }
-
-    const result = await action;
+    const result = await query;
     return result;
   }
 }
