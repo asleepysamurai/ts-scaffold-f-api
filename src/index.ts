@@ -5,7 +5,6 @@
 import fastify from 'fastify';
 import fastifyFormBody from 'fastify-formbody';
 import fastifySecureSession from 'fastify-secure-session';
-import type { ServerResponse } from 'http';
 
 import { env } from 'utils/environment';
 import * as routes from 'routes';
@@ -21,20 +20,16 @@ const initPlugins = async (app: fastify.FastifyInstance) => {
   });
 };
 
-const setupDefaultRoute = (app: fastify.FastifyInstance) => {
-  app.get('/', async (_req: fastify.FastifyRequest, res: fastify.FastifyReply<ServerResponse>) => {
-    return res.redirect(env.get('APP_SERVER_DEFAULT_URL'));
-  });
-};
-
 const initRoutes = async (app: fastify.FastifyInstance) => {
-  setupDefaultRoute(app);
-
-  return Promise.all(
-    Object.values(routes).map((init) => {
-      return Promise.resolve(init(app));
-    }),
-  );
+  return Object.values(routes).map((init) => {
+    app.register(
+      async (app, _, done) => {
+        await init(app);
+        done();
+      },
+      { prefix: '/v1' },
+    );
+  });
 };
 
 const init = async () => {
