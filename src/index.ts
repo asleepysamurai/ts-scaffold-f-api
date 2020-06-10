@@ -5,6 +5,7 @@
 import fastify from 'fastify';
 import fastifyFormBody from 'fastify-formbody';
 import fastifySecureSession from 'fastify-secure-session';
+import fastifyCors from 'fastify-cors';
 
 import { env } from 'utils/environment';
 import * as routes from 'routes';
@@ -17,6 +18,10 @@ const initPlugins = async (app: fastify.FastifyInstance) => {
     cookie: {
       secret: env.get('SESSION_COOKIE_SECRET'),
     },
+  });
+  app.register(fastifyCors, {
+    origin: `${env.get('FRONTEND_APP_PROTOCOL')}://${env.get('FRONTEND_APP_HOST')}`,
+    methods: ['GET', 'POST'],
   });
 };
 
