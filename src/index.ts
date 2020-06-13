@@ -4,21 +4,15 @@
 
 import fastify from 'fastify';
 import fastifyFormBody from 'fastify-formbody';
-import fastifySecureSession from 'fastify-secure-session';
 import fastifyCors from 'fastify-cors';
 
 import { env } from 'utils/environment';
+import { authPlugin } from 'utils/auth';
 import * as routes from 'routes';
 
 const initPlugins = async (app: fastify.FastifyInstance) => {
   app.register(fastifyFormBody);
-  app.register(fastifySecureSession, {
-    secret: env.get('SESSION_COOKIE_KEY'),
-    salt: env.get('SESSION_COOKIE_SALT'),
-    cookie: {
-      secret: env.get('SESSION_COOKIE_SECRET'),
-    },
-  });
+  app.register(authPlugin);
   app.register(fastifyCors, {
     origin: `${env.get('FRONTEND_APP_PROTOCOL')}://${env.get('FRONTEND_APP_HOST')}`,
     methods: ['GET', 'POST'],
