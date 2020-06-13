@@ -66,6 +66,7 @@ export const handle = async (
         throw {
           code: 400,
           message: 'Invalid code',
+          errorCode: 'EINVALIDCODE',
         };
       }
 
@@ -109,6 +110,7 @@ export const handle = async (
         success: false,
         error: {
           message: err.message,
+          code: err.errorCode,
         },
       };
     } else {
