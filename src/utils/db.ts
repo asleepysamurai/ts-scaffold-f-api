@@ -13,6 +13,7 @@ const promisifiedRandomBytes = promisify(randomBytes);
 
 class DB {
   private knex: Knex;
+  private readonly radixForIdConversion: number = 36;
 
   constructor(
     public name: string,
@@ -38,11 +39,15 @@ class DB {
   }
 
   async getId(numBytes: number = 6, delimiter: string = '-'): Promise<string> {
-    const currentTime = Date.now().toString(36);
+    const currentTime = Date.now().toString(this.radixForIdConversion);
     const randomKey = (await promisifiedRandomBytes(numBytes)).toString('base64');
     const urlSafeRandomKey = randomKey.replace(/\//g, '-').replace(/\+/g, '_');
 
     return currentTime + delimiter + urlSafeRandomKey;
+  }
+
+  getCreatedAtFromId(id: string, delimiter: string = '-'): number {
+    return parseInt(id.split(delimiter)[0], this.radixForIdConversion);
   }
 
   async insert(
@@ -135,8 +140,10 @@ class DB {
       trx?: Knex.Transaction;
     } = {},
   ): Knex.QueryBuilder {
+    queryBuilder.whereNull('_deleted_at');
+
     if (where) {
-      queryBuilder.where(where);
+      queryBuilder.andWhere(where);
     }
 
     if (select) {

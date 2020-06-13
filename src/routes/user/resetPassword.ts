@@ -10,6 +10,8 @@ import { db } from 'utils/db';
 import bcrypt from 'bcrypt';
 import type { Transaction } from 'knex';
 
+const MAX_CODE_VALID_DURATION = 2 * 24 * 60 * 60 * 1000; // 2 Days;
+
 export const schema = {
   body: {
     type: 'object',
@@ -67,6 +69,17 @@ export const handle = async (
           code: 400,
           message: 'Invalid code',
           errorCode: 'EINVALIDCODE',
+        };
+      }
+
+      const codeCreatedAt = db.getCreatedAtFromId(resetCode?.code);
+      const codeMaxExpirationAt = codeCreatedAt + MAX_CODE_VALID_DURATION;
+
+      if (codeMaxExpirationAt < Date.now()) {
+        throw {
+          code: 400,
+          message: 'Expired code',
+          errorCode: 'EEXPIREDCODE',
         };
       }
 
