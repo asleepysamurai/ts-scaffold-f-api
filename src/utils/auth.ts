@@ -6,7 +6,20 @@ import fastify from 'fastify';
 import fastifyPlugin from 'fastify-plugin';
 import fastifyJWT from 'fastify-jwt';
 import { env } from './environment';
-import { ServerResponse } from 'http';
+import { Server, IncomingMessage, ServerResponse } from 'http';
+
+declare module 'fastify' {
+  export interface FastifyInstance<
+    HttpServer = Server,
+    HttpRequest = IncomingMessage,
+    HttpResponse = ServerResponse
+  > {
+    authenticate: (
+      req: fastify.FastifyRequest,
+      res: fastify.FastifyReply<ServerResponse>,
+    ) => Promise<void>;
+  }
+}
 
 export const authPlugin = fastifyPlugin(async function (app: fastify.FastifyInstance) {
   app.register(fastifyJWT, {
