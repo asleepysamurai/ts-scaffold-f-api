@@ -38,14 +38,14 @@ export const schema = {
 };
 
 const sendResetCode = async (email: string, code: string, isActivation: boolean = false) => {
-  const resetLink = `${env.get('MAILER_LINK_PREFIX')}/user/${
+  const resetLink = `${env.get('EMAIL_LINK_PREFIX')}/user/${
     isActivation ? 'verify' : 'reset-password'
   }?code=${code}`;
 
   return mailer.send(
     {
-      name: 'F-API Support',
-      address: 'f-api-support@example.com',
+      name: env.get('EMAIL_SUPPORT_NAME'),
+      address: env.get('EMAIL_SUPPORT_ADDRESS'),
     },
     email,
     `Please ${isActivation ? 'activate your account' : 'reset your account password'}`,
@@ -53,7 +53,7 @@ const sendResetCode = async (email: string, code: string, isActivation: boolean 
 
 You (or somebody on your behalf), recently ${
       isActivation ? 'created a' : 'requested a password reset for your'
-    } F-API account. In order to ${
+    } ${env.get('APP_NAME')} account. In order to ${
       isActivation ? 'activate your account' : 'reset your password'
     }, please copy the link below and paste it into your browser's address bar.
 
@@ -64,13 +64,13 @@ If you did not request the ${
     }, you can ignore this email. There has been no unauthorized access to your account, and your account is safe.
 
 Regards,
-F-API Support
+${env.get('APP_NAME')} Support
 `,
     `Hello :)
 
 <p>You (or somebody on your behalf), recently ${
       isActivation ? 'created a' : 'requested a password reset for your'
-    } F-API account. In order to ${
+    } ${env.get('APP_NAME')} account. In order to ${
       isActivation ? 'activate your account' : 'reset your password'
     }, please click the link below.</p>
 
@@ -81,7 +81,7 @@ F-API Support
     }, you can ignore this email. There has been no unauthorized access to your account, and your account is safe.</p>
 
 <br><br>Regards,<br>
-F-API Support
+${env.get('APP_NAME')} Support
 `,
   );
 };

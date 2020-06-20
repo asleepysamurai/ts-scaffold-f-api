@@ -47,36 +47,40 @@ export const schema = {
 };
 
 const sendVerificationCode = async (email: string, verificationCode: string) => {
-  const verificationLink = `${env.get('MAILER_LINK_PREFIX')}/user/verify?code=${verificationCode}`;
+  const verificationLink = `${env.get('EMAIL_LINK_PREFIX')}/user/verify?code=${verificationCode}`;
 
   return mailer.send(
     {
-      name: 'F-API Support',
-      address: 'f-api-support@example.com',
+      name: env.get('EMAIL_SUPPORT_NAME'),
+      address: env.get('EMAIL_SUPPORT_ADDRESS'),
     },
     email,
-    'Please activate your new F-API account',
+    `Please activate your new ${env.get('APP_NAME')} account`,
     `Hello :)
 
-A new F-API account has been created for you. Before you can use this account, you need to verify your email address. In order to verify your email address, please copy the link below and paste it into your browser's address bar.
+A new ${env.get(
+      'APP_NAME',
+    )} account has been created for you. Before you can use this account, you need to verify your email address. In order to verify your email address, please copy the link below and paste it into your browser's address bar.
 
 ${verificationLink}
 
 If you did not create this account, or it was not created on your behalf, please let us know (by replying to this email), so we can delete this account.
 
 Regards,
-F-API Support
+${env.get('APP_NAME')} Support
 `,
     `Hello :)
 
-<p>A new F-API account has been created for you. Before you can use this account, you need to verify your email address. In order to verify your email address, please click the link below.</p>
+<p>A new ${env.get(
+      'APP_NAME',
+    )} account has been created for you. Before you can use this account, you need to verify your email address. In order to verify your email address, please click the link below.</p>
 
 <p><a href="${verificationLink}">${verificationLink}</a></p>
 
 <p>If you did not create this account, or it was not created on your behalf, please let us know (by replying to this email), so we can delete this account.</p>
 
 <br><br>Regards,<br>
-F-API Support
+${env.get('APP_NAME')} Support
 `,
   );
 };
@@ -92,36 +96,36 @@ const sendVerificationOrWarning = async (email: string): Promise<{ id: string }>
     // User already verified
     await mailer.send(
       {
-        name: 'F-API Support',
-        address: 'f-api-support@example.com',
+        name: env.get('EMAIL_SUPPORT_NAME'),
+        address: env.get('EMAIL_SUPPORT_ADDRESS'),
       },
       user.email,
-      'Somebody attempted to create an F-API account for you',
+      `Somebody attempted to create an ${env.get('APP_NAME')} account for you`,
       `Hello :)
 
-You, or somebody on your behalf attempted to create a new F-API account.
+You, or somebody on your behalf attempted to create a new ${env.get('APP_NAME')} account.
 
 However an account already exists for this email address. If this was intended by you, you can go ahead and login, as you normally would, or you could request a password reset if you do not remember your account password.
 
 If you did not create this account, or it was not created on your behalf, please ignore this email. Your account is safe, and there has not been any unauthorized access.
 
 Regards,
-F-API Support
+${env.get('APP_NAME')} Support
 `,
       `Hello :)
 
-<p>You, or somebody on your behalf attempted to create a new F-API account.</p>
+<p>You, or somebody on your behalf attempted to create a new ${env.get('APP_NAME')} account.</p>
 
 <p>However an account already exists for this email address. If this was intended by you, you can go ahead and <a href="${env.get(
-        'MAILER_LINK_PREFIX',
+        'EMAIL_LINK_PREFIX',
       )}/user/login">login</a>, as you normally would, or you could request a <a href="${env.get(
-        'MAILER_LINK_PREFIX',
+        'EMAIL_LINK_PREFIX',
       )}/user/forgot-password">password reset</a> if you do not remember your account password.</p>
 
 <p>If you did not create this account, or it was not created on your behalf, please ignore this email. Your account is safe, and there has not been any unauthorized access.</p>
 
 <br><br>Regards,<br>
-F-API Support
+${env.get('APP_NAME')} Support
 `,
     );
   } else {
