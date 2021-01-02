@@ -16,7 +16,7 @@ export const user = (app: fastify.FastifyInstance) => {
   app.post('/user/login', { schema: login.schema }, login.handle(app));
   app.post(
     '/user/logout',
-    { schema: logout.schema, preValidation: [app.authenticate] },
+    { schema: logout.schema, preValidation: [app.softAuthenticate] },
     logout.handle,
   );
 };

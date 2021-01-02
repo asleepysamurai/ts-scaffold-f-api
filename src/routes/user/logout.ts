@@ -33,12 +33,15 @@ export const handle = async (
   res: fastify.FastifyReply<ServerResponse>,
 ) => {
   try {
-    const { userId, sessionId } = req.user as { userId: string; sessionId: string };
+    // Unauthenticated / expired authentication users will not have req.user
+    if (req.user) {
+      const { userId, sessionId } = req.user as { userId: string; sessionId: string };
 
-    await db.delete('sessions', {
-      where: { user_id: userId, id: sessionId },
-      recordCanUpdate: false,
-    });
+      await db.delete('sessions', {
+        where: { user_id: userId, id: sessionId },
+        recordCanUpdate: false,
+      });
+    }
 
     return {
       success: true,

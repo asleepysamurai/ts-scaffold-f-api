@@ -14,7 +14,11 @@ declare module 'fastify' {
     HttpRequest = IncomingMessage,
     HttpResponse = ServerResponse
   > {
-    authenticate: (
+    softAuthenticate: (
+      req: fastify.FastifyRequest,
+      res: fastify.FastifyReply<ServerResponse>,
+    ) => Promise<void>;
+    hardAuthenticate: (
       req: fastify.FastifyRequest,
       res: fastify.FastifyReply<ServerResponse>,
     ) => Promise<void>;
@@ -26,14 +30,18 @@ export const authPlugin = fastifyPlugin(async function (app: fastify.FastifyInst
     secret: env.get('JWT_SECRET'),
   });
 
-  app.decorate('authenticate', async function (
-    req: fastify.FastifyRequest,
-    res: fastify.FastifyReply<ServerResponse>,
-  ) {
-    try {
-      await req.jwtVerify();
-    } catch (err) {
-      res.send(err);
-    }
-  });
+  const auth = function (throwError: boolean) {
+    return async function (req: fastify.FastifyRequest, res: fastify.FastifyReply<ServerResponse>) {
+      try {
+        await req.jwtVerify();
+      } catch (err) {
+        if (throwError) {
+          res.send(err);
+        }
+      }
+    };
+  };
+
+  app.decorate('hardAuthenticate', auth(true));
+  app.decorate('softAuthenticate', auth(false));
 });
