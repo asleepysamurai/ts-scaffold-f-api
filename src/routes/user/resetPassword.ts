@@ -9,6 +9,7 @@ import type { ServerResponse } from 'http';
 import { db } from 'utils/db';
 import bcrypt from 'bcrypt';
 import type { Transaction } from 'knex';
+import type { User, ResetCode } from 'types';
 
 const MAX_CODE_VALID_DURATION = 2 * 24 * 60 * 60 * 1000; // 2 Days;
 
@@ -60,7 +61,7 @@ export const handle = async (
     } = {};
 
     await db.transact(async (trx: Transaction) => {
-      const resetCode = await db.getOne('pending_password_resets', {
+      const resetCode = await db.getOne<ResetCode>('pending_password_resets', {
         where: { code: req.body.code },
       });
 
@@ -84,7 +85,7 @@ export const handle = async (
       }
 
       {
-        const user = await db.getOne('users', {
+        const user = await db.getOne<User>('users', {
           where: { id: resetCode.user_id },
         });
 

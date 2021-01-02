@@ -8,6 +8,7 @@ import { db } from 'utils/db';
 import { env } from 'utils/environment';
 import { mailer } from 'utils/mailer';
 import type { Transaction } from 'knex';
+import type { User } from 'types';
 
 export const schema = {
   body: {
@@ -92,7 +93,7 @@ export const handle = async (
 ) => {
   try {
     await db.transact(async (trx: Transaction) => {
-      const user = await db.getOne('users', { where: { email: req.body.email } });
+      const user = await db.getOne<User>('users', { where: { email: req.body.email } });
 
       const isActivation = !user?._verified_at;
 

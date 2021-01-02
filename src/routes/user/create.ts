@@ -8,6 +8,7 @@ import { db } from 'utils/db';
 import { env } from 'utils/environment';
 import { mailer } from 'utils/mailer';
 import type { Transaction } from 'knex';
+import type { User, VerificationCode } from 'types';
 
 export const schema = {
   body: {
@@ -86,7 +87,7 @@ ${env.get('APP_NAME')} Support
 };
 
 const sendVerificationOrWarning = async (email: string): Promise<{ id: string }> => {
-  let user = await db.getOne('users', { where: { email } });
+  let user = await db.getOne<User>('users', { where: { email } });
   if (!(user?.email && user?.id)) {
     // Should never happen, but just in case
     throw new Error('Unknown user');
@@ -129,7 +130,7 @@ ${env.get('APP_NAME')} Support
 `,
     );
   } else {
-    let verificationCode = await db.getOne('pending_password_resets', {
+    let verificationCode = await db.getOne<VerificationCode>('pending_password_resets', {
       where: { user_id: user.id },
     });
     if (verificationCode?.code) {

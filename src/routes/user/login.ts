@@ -6,6 +6,7 @@ import fastify from 'fastify';
 import type { ServerResponse } from 'http';
 import { db } from 'utils/db';
 import bcrypt from 'bcrypt';
+import type { User } from 'types';
 
 export const schema = {
   body: {
@@ -53,7 +54,7 @@ export const schema = {
 export const handle = (app: fastify.FastifyInstance) => {
   return async (req: fastify.FastifyRequest, res: fastify.FastifyReply<ServerResponse>) => {
     try {
-      const user = await db.getOne('users', { where: { email: req.body.email } });
+      const user = await db.getOne<User>('users', { where: { email: req.body.email } });
 
       if (user?.id && user?.password) {
         const passwordCheckOkay = await bcrypt.compare(req.body.password, user.password);
