@@ -24,10 +24,13 @@
     "start:inspect": "yarn prep && yarn env:types:dev && yarn build:watch:run",
     "start:inspect-brk": "yarn prep && yarn env:types:dev && yarn build:watch:run-brk",
     "start:prod": "yarn prep && yarn env:types:prod && yarn build:prod",
-    "knex": "knex --knexfile ./knexfile.ts"
+    "knex": "knex --knexfile ./knexfile.ts",
+    "test": "TZ='UTC' jest",
+    "test:inspect-brk": "TZ='UTC' node --inspect-brk `which jest` --runInBand"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
+    "@types/jest": "^26.0.20",
     "@types/node": "^14.0.1",
     "@types/nodemailer": "^6.4.0",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
@@ -35,10 +38,12 @@
     "eslint": "^7.0.0",
     "eslint-plugin-import": "^2.20.2",
     "husky": "^4.2.5",
+    "jest": "^26.6.3",
     "prettier": "2.0.5",
     "prettier-eslint-cli": "^5.0.0",
     "pretty-quick": "^2.0.1",
     "rimraf": "^3.0.2",
+    "ts-jest": "^26.5.3",
     "ts-node": "^8.10.1",
     "tsc-watch": "^4.2.5",
     "types-from-env": "^1.0.0",
